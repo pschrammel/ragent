@@ -10,7 +10,7 @@ require 'logging'
 require 'pathname'
 
 require_relative 'ragent/logging'
-
+require_relative 'ragent/plugins'
 module Ragent
   def self.start(*args)
     Agent.new(*args).run
@@ -19,21 +19,15 @@ module Ragent
   class Agent
     include Ragent::Logging
 
-    attr_reader :supervisor, :logger
+    attr_reader :supervisor, :logger, :workdir
     def initialize(log_level:, workdir:)
       @workdir=Pathname.new(workdir)
-      @plugins={}
+
       @logger=::Logging.logger['ragent']
       @logger.add_appenders ::Logging.appenders.stdout
-      @queue = Queue.new
-      #@client = Kontena::WebsocketClient.new(@opts[:api_uri], @opts[:api_token])
+      @plugins=Plugins.search(self)
+      @plugins.configure
       @supervisor = Celluloid::Supervision::Container.run!
-      initialize_plugins
-    end
-
-    def connect!
-      start_em
-    #  @client.ensure_connect
     end
 
     def start_em
@@ -51,8 +45,9 @@ module Ragent
         end
       end
 
-      connect!
-      start_plugins
+      start_em
+      @plugins.start
+
       stop=false
       while stop || readable_io = IO.select([self_read])
         signal = readable_io.first[0].gets.strip
@@ -81,34 +76,5 @@ module Ragent
         false
       end
     end
-
-
-    def initialize_plugins
-      # find plugins
-      plugins_dir=@workdir.join("plugins").expand_path
-      plugins_dir.
-        each_child(false) do |plugin_dir|
-        require plugins_dir.join(plugin_dir,'ragent.rb').to_s
-        plugin=ActiveSupport::Inflector.
-                constantize(
-                  ActiveSupport::Inflector.camelize(
-                  plugin_dir)).new(self)
-        @plugins[plugin_dir]=plugin
-        info "found plugin #{plugin.name}"
-        plugin.configure
-      end
-      # call initialize
-    end
-
-    def start_plugins
-      info "Start plugins"
-      @plugins.values.each do |plugin|
-        plugin.start
-      end
-
-    end
-
   end
-
-
 end
