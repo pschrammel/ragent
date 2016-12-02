@@ -1,5 +1,12 @@
 # About
-Ragent is am agent framework. It's meant to be installed on a host and connect to a master server. The master server can run commands and the slave can send a stream of arbitrary data to the master. It has a simple plugin system so commands can be added even at runtime.
+Ragent is am agent framework. It's meant to be installed on a host and connect do it's jobs.
+It's exact job depends on the plugins you install.
+Available plugins are:
+ * master - a master node that receives data
+ * slave - a slave node that send data
+ * docker-events
+ * docker-control
+ * stats
 
 # Usage
 

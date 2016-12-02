@@ -2,6 +2,9 @@
 
 require_relative '../lib/ragent'
 
-Ragent.start(log_level: ENV['RAGENT_LOG_LEVEL'] || 'info')
+Ragent.start(
+  log_level: ENV['RAGENT_LOG_LEVEL'] || 'info',
+  workdir: ARGV[0]
+)
 
 

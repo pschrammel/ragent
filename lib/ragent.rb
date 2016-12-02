@@ -4,28 +4,27 @@ require 'thread'
 require 'celluloid/current'
 require 'celluloid/autostart'
 
+require 'active_support/inflector'
+
 require 'logging'
+require 'pathname'
 
-
+require_relative 'ragent/logging'
 
 module Ragent
-  def self.start(options)
-    Agent.new(options).run
+  def self.start(*args)
+    Agent.new(*args).run
   end
 
   class Agent
-    def warn str
-      @logger.warn(str)
-    end
+    include Ragent::Logging
 
-    def info str
-      @logger.info(str)
-    end
-
-
-    def initialize(options)
-      @logger=Logging.logger['ragent']
-      @logger.add_appenders Logging.appenders.stdout
+    attr_reader :supervisor, :logger
+    def initialize(log_level:, workdir:)
+      @workdir=Pathname.new(workdir)
+      @plugins={}
+      @logger=::Logging.logger['ragent']
+      @logger.add_appenders ::Logging.appenders.stdout
       @queue = Queue.new
       #@client = Kontena::WebsocketClient.new(@opts[:api_uri], @opts[:api_token])
       @supervisor = Celluloid::Supervision::Container.run!
@@ -83,39 +82,33 @@ module Ragent
       end
     end
 
+
     def initialize_plugins
-      puts "init plugins"
+      # find plugins
+      plugins_dir=@workdir.join("plugins").expand_path
+      plugins_dir.
+        each_child(false) do |plugin_dir|
+        require plugins_dir.join(plugin_dir,'ragent.rb').to_s
+        plugin=ActiveSupport::Inflector.
+                constantize(
+                  ActiveSupport::Inflector.camelize(
+                  plugin_dir)).new(self)
+        @plugins[plugin_dir]=plugin
+        info "found plugin #{plugin.name}"
+        plugin.configure
+      end
+      # call initialize
     end
 
     def start_plugins
-      puts "start_plugins"
-      @supervisor.supervise(
-        type: Ragent::Test,
-        as: :the_time
-      )
-      @supervisor.supervise(
-        type: Ragent::Test,
-        as: :the_time2
-      )
-    end
-
-  end
-
-  class Test
-    include Celluloid
-    include Celluloid::Notifications
-    def initialize
-      async.start
-    end
-
-    def start
-      while true do
-        puts Time.now
-        sleep 5
+      info "Start plugins"
+      @plugins.values.each do |plugin|
+        plugin.start
       end
-    end
-    def stop
 
     end
+
   end
+
+
 end
