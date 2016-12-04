@@ -45,7 +45,7 @@ module Ragent
         end
       end
 
-      start_em
+      #start_em
       @plugins.start
 
       stop=false
@@ -61,7 +61,8 @@ module Ragent
       case signal
       when 'TERM','INT'
         info "Shutting down..."
-        EM.stop
+        EM.stop if EventMachine.reactor_running?
+        @plugins.stop
         @supervisor.shutdown
         true
       when 'TTIN'

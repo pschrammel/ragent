@@ -39,6 +39,9 @@ class TimeBomb
     )
   end
 
+  def stop
+
+  end
   def name
     'TimeBomb'
   end

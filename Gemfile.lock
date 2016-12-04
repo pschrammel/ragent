@@ -19,6 +19,10 @@ GEM
       timers (>= 4.1.1)
     celluloid-fsm (0.20.5)
       timers (>= 4.1.1)
+    celluloid-io (0.17.3)
+      celluloid (>= 0.17.2)
+      nio4r (>= 1.1)
+      timers (>= 4.1.1)
     celluloid-pool (0.20.5)
       timers (>= 4.1.1)
     celluloid-supervision (0.20.6)
@@ -36,6 +40,7 @@ GEM
       multi_json (~> 1.10)
     minitest (5.10.0)
     multi_json (1.12.1)
+    nio4r (1.2.1)
     thread_safe (0.3.5)
     timers (4.1.2)
       hitimes
@@ -51,6 +56,7 @@ PLATFORMS
 DEPENDENCIES
   activesupport
   celluloid
+  celluloid-io
   eventmachine
   faye-websocket
   logging

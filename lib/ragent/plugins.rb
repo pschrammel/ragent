@@ -44,5 +44,11 @@ module Ragent
       end
     end
 
+    def stop
+      @plugins.values.each do |plugin|
+        info "Stoping: #{plugin.name}"
+        plugin.stop
+      end
+    end
   end
 end
