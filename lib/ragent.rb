@@ -11,6 +11,9 @@ require 'pathname'
 
 require_relative 'ragent/logging'
 require_relative 'ragent/plugins'
+require_relative 'ragent/commands'
+require_relative 'ragent/command'
+
 module Ragent
   def self.start(*args)
     Agent.new(*args).run
@@ -19,21 +22,16 @@ module Ragent
   class Agent
     include Ragent::Logging
 
-    attr_reader :supervisor, :logger, :workdir
+    attr_reader :supervisor, :workdir
+    attr_reader :commands
     def initialize(log_level:, workdir:)
       @workdir=Pathname.new(workdir)
-
-      @logger=::Logging.logger['ragent']
-      @logger.add_appenders ::Logging.appenders.stdout
+      @commands=Ragent::Commands.new(self)
+      Ragent::Logging.logger=::Logging.logger['ragent']
+      logger.add_appenders ::Logging.appenders.stdout
       @plugins=Plugins.search(self)
       @plugins.configure
       @supervisor = Celluloid::Supervision::Container.run!
-    end
-
-    def start_em
-      EM.epoll
-      Thread.new { EventMachine.run } unless EventMachine.reactor_running?
-      sleep 0.01 until EventMachine.reactor_running?
     end
 
     def run
@@ -54,6 +52,14 @@ module Ragent
         stop=handle_signal(signal)
         exit(0)
       end
+    end
+
+    private
+
+    def start_em
+      EM.epoll
+      Thread.new { EventMachine.run } unless EventMachine.reactor_running?
+      sleep 0.01 until EventMachine.reactor_running?
     end
 
     def handle_signal(signal)

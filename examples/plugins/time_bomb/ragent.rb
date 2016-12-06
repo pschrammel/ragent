@@ -10,10 +10,11 @@ class TimeBomb
 
     def start
       while true do
-        puts Time.now
         sleep 5
+        puts "Boom! #{Time.now}"
       end
     end
+
     def stop
 
     end
@@ -29,21 +30,32 @@ class TimeBomb
 
   def configure
     info "configuring TimeBomb"
+    command("tick", :command_tick)
   end
 
   def start
-    info "starting timebomb"
+  end
+
+  def stop
+  end
+
+  def name
+    'time-bomb'
+  end
+
+  def command(sub, method)
+    cmd=Ragent::Command.new(main: name,
+                             sub: sub,
+                             recipient: self,
+                             method: method)
+    @ragent.commands.add(cmd)
+  end
+
+  def command_tick
     @ragent.supervisor.supervise(
       type: TimeBomb::TestBomb,
       as: :time_bomb
     )
+    "starting timebomb"
   end
-
-  def stop
-
-  end
-  def name
-    'TimeBomb'
-  end
-
 end

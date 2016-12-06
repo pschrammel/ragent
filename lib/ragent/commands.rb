@@ -1,0 +1,46 @@
+module Ragent
+  class Commands
+    def initialize(ragent)
+      @ragent=ragent
+      @commands={}
+    end
+
+    def add(command)
+      if command.sub
+        @commands[command.main] ||= {}
+        @commands[command.main][command.sub]=command
+      else
+        @commands[command.main] ||= command
+      end
+    end
+
+    def match(line)
+      words=line.split(" ")
+
+      case words.length
+      when 1
+        cmd=@commands[words[0]]
+        #got a main hit
+        if cmd
+          if cmd.kind_of?(Hash)
+            return nil # no exact match (yet)
+          else # full hit
+            cmd
+          end
+        end
+      when 2
+        cmd=@commands[words[0]]
+        if cmd
+          if cmd.kind_of?(Hash)
+            subcmd=cmd[words[1]]
+            return subcmd
+          else
+            return cmd
+          end
+        end
+      end
+
+      nil
+    end
+  end
+end

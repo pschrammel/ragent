@@ -27,7 +27,7 @@ class Login
   end
 
   def name
-    'Login'
+    'login'
   end
 
   private
@@ -38,7 +38,12 @@ class Login
   def handle_connection(socket)
     _, port, host = socket.peeraddr
     info "connection from #{host}:#{port}"
-    loop { socket.write socket.readpartial(4096)}
+    loop {
+      line=socket.readpartial(4096)
+      if cmd=@ragent.commands.match(line)
+        socket.write cmd.execute
+      end
+    }
   rescue EOFError
     info "disconnected"
     socket.close
