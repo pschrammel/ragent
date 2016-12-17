@@ -38,14 +38,22 @@ class Login
   def handle_connection(socket)
     _, port, host = socket.peeraddr
     info "connection from #{host}:#{port}"
-    loop {
+    looping=true
+    while looping do
       line=socket.readpartial(4096)
-      if cmd=@ragent.commands.match(line)
+      if line.strip=='exit'
+        socket.puts "exiting"
+        looping=false
+      elsif cmd=@ragent.commands.match(line)
         socket.puts cmd.execute
+      else
+        socket.puts "unknown command: #{line}"
       end
-    }
+    end
+    socket.close
   rescue EOFError
     info "disconnected"
     socket.close
   end
+
 end

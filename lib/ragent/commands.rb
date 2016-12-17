@@ -5,6 +5,7 @@ module Ragent
     def initialize(ragent)
       @ragent=ragent
       @commands={}
+      add_help_command
     end
 
     def add(command)
@@ -44,6 +45,20 @@ module Ragent
       end
 
       nil
+    end
+
+
+    private
+
+    def help_command
+      "I'd like to help you!"
+    end
+
+    def add_help_command
+      add(Ragent::Command.new(main: 'help',
+                             recipient: self,
+                             method: :help_command
+                            ))
     end
   end
 end

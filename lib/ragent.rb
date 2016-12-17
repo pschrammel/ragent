@@ -61,11 +61,11 @@ module Ragent
 
     private
 
-    def start_em
-      EM.epoll
-      Thread.new { EventMachine.run } unless EventMachine.reactor_running?
-      sleep 0.01 until EventMachine.reactor_running?
-    end
+    #def start_em
+    #  EM.epoll
+    #  Thread.new { EventMachine.run } unless EventMachine.reactor_running?
+    #  sleep 0.01 until EventMachine.reactor_running?
+    #end
 
     def handle_signal(signal)
       info "Got signal #{signal}"
@@ -90,16 +90,16 @@ module Ragent
     end
 
 
-    def stop_command
+    def shutdown_command
       @self_write.puts("TERM")
     end
 
     def register_commands
       # stop
-      cmd=Ragent::Command.new(main: 'stop',
+      cmd=Ragent::Command.new(main: 'shutdown',
                               sub: nil,
                               recipient: self,
-                              method: :stop_command)
+                              method: :shutdown_command)
       @commands.add(cmd)
     end
   end

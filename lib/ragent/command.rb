@@ -4,7 +4,7 @@ module Ragent
     include Ragent::Logging
 
     attr_reader :main, :sub
-    def initialize(main:, sub:, recipient:, method:)
+    def initialize(main:, sub: nil, recipient:, method:)
       @main=main
       @sub=sub
       @recipient=recipient
