@@ -1,5 +1,7 @@
 module Ragent
   class Commands
+    include Ragent::Logging
+
     def initialize(ragent)
       @ragent=ragent
       @commands={}
@@ -12,6 +14,7 @@ module Ragent
       else
         @commands[command.main] ||= command
       end
+      info "registered command: #{command.help}"
     end
 
     def match(line)
@@ -25,7 +28,7 @@ module Ragent
           if cmd.kind_of?(Hash)
             return nil # no exact match (yet)
           else # full hit
-            cmd
+            return cmd
           end
         end
       when 2

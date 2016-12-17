@@ -26,20 +26,25 @@ module Ragent
     attr_reader :commands
     def initialize(log_level:, workdir:)
       @workdir=Pathname.new(workdir)
-      @commands=Ragent::Commands.new(self)
+
+
       Ragent::Logging.logger=::Logging.logger['ragent']
       logger.add_appenders ::Logging.appenders.stdout
+
+      @commands=Ragent::Commands.new(self)
+      register_commands
+
       @plugins=Plugins.search(self)
       @plugins.configure
       @supervisor = Celluloid::Supervision::Container.run!
     end
 
     def run
-      self_read, self_write = IO.pipe
+      self_read, @self_write = IO.pipe
 
       %w(TERM TTIN INT).each do |sig|
         Signal.trap sig do
-          self_write.puts(sig)
+          @self_write.puts(sig)
         end
       end
 
@@ -82,6 +87,20 @@ module Ragent
         end
         false
       end
+    end
+
+
+    def stop_command
+      @self_write.puts("TERM")
+    end
+
+    def register_commands
+      # stop
+      cmd=Ragent::Command.new(main: 'stop',
+                              sub: nil,
+                              recipient: self,
+                              method: :stop_command)
+      @commands.add(cmd)
     end
   end
 end

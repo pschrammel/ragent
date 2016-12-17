@@ -41,7 +41,7 @@ class Login
     loop {
       line=socket.readpartial(4096)
       if cmd=@ragent.commands.match(line)
-        socket.write cmd.execute
+        socket.puts cmd.execute
       end
     }
   rescue EOFError

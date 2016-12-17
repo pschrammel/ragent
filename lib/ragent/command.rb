@@ -15,5 +15,8 @@ module Ragent
       info "running: #{@main} #{@sub}, calling: #{@method}"
       @recipient.send(@method)
     end
-  end
+
+    def help
+      "#{@main} #{@sub}"
+    end  end
 end
