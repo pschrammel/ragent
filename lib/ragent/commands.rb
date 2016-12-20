@@ -51,7 +51,15 @@ module Ragent
     private
 
     def help_command
-      "I'd like to help you!"
+      @commands.values.map do |subs|
+        if subs.kind_of?(Hash)
+          subs.values.map do |cmd|
+            cmd.help
+          end
+        else
+          subs.help
+        end
+      end.flatten.join("\n")
     end
 
     def add_help_command
