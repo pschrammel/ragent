@@ -10,6 +10,7 @@ module Ragent
       @ragent=ragent
       @logger=ragent.logger
       @plugins={}
+      register_commands
     end
 
     def search
@@ -49,6 +50,20 @@ module Ragent
         info "Stoping: #{plugin.name}"
         plugin.stop
       end
+    end
+
+    private
+    def register_commands
+      # stop
+      cmd=Ragent::Command.new(main: 'plugins',
+                              sub: 'list',
+                              recipient: self,
+                              method: :plugins_list_command)
+      @ragent.commands.add(cmd)
+    end
+
+    def plugins_list_command(options)
+      @plugins.values.map do |plugin| plugin.name end.join("\n")
     end
   end
 end
