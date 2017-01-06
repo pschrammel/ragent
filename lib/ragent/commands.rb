@@ -18,39 +18,21 @@ module Ragent
       info "registered command: #{command.help}"
     end
 
-    def match(line)
-      words=line.split(" ")
-
-      case words.length
-      when 1
-        cmd=@commands[words[0]]
-        #got a main hit
-        if cmd
-          if cmd.kind_of?(Hash)
-            return nil # no exact match (yet)
-          else # full hit
-            return cmd
-          end
-        end
-      when 2
-        cmd=@commands[words[0]]
-        if cmd
-          if cmd.kind_of?(Hash)
-            subcmd=cmd[words[1]]
-            return subcmd
-          else
-            return cmd
-          end
+    def lookup(main,sub,options)
+      debug "checkig command: #{main},#{sub},#{options}"
+      cmd=@commands[main]
+      if cmd
+        if cmd.kind_of?(Hash) && sub
+          return @commands[main][sub]
+        else
+          return cmd
         end
       end
-
       nil
     end
-
-
     private
 
-    def help_command
+    def help_command(options={})
       @commands.values.map do |subs|
         if subs.kind_of?(Hash)
           subs.values.map do |cmd|
@@ -68,5 +50,7 @@ module Ragent
                              method: :help_command
                             ))
     end
+
+
   end
 end

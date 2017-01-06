@@ -11,9 +11,9 @@ module Ragent
       @method=method
     end
 
-    def execute #(*args)
+    def execute(options={})
       info "running: #{@main} #{@sub}, calling: #{@method}"
-      @recipient.send(@method)
+      @recipient.send(@method,options)
     end
 
     def help

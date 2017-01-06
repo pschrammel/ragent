@@ -62,22 +62,23 @@ class TimeBomb
   end
 
 
-  def command_disarm
-    bomb_name='time_bomb_1'
+  def command_disarm(options)
+    bomb_name="time_bomb_#{options["bomb"]}"
     bomb=Actor[bomb_name]
     if bomb
       bomb.terminate
+      @time_bombs.delete(bomb_name)
       "terminated #{bomb_name}"
     else
       "no such bomb #{bomb_name}"
     end
   end
 
-  def command_list
+  def command_list(options)
     @time_bombs.keys.join("\n")
   end
 
-  def command_tick
+  def command_tick(options)
     # how to track the bombs to disarm them?
     as="time_bomb_#{@next_time_bomb_id}"
     @time_bombs[as]=true
