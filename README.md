@@ -10,24 +10,16 @@ Available plugins are:
 # Usage
 
 
-ragent start <directory>
+ragent <directory>
 start the agent and all plugins
-
-ragent connect <directory>
-connect to a local running agent
 
 Built in commands
 
-plugin install <name> <url>
-plugin uninstall <name>
-plugin list
-plugin start <name>
-plugin stop <name>
-plugin config <name>
+ * help
+ * shutdown
 
-logger stdout
-logger file <file>
-logger level <debug|info|warning>
+
+
 
 # FAQ
 
@@ -38,3 +30,5 @@ Why doesn't it daemonize. We'll leave this problem to docker or daemonize and ot
  * dependency resolution
  * dependency versioning
  * connect
+ * plugins
+   * websocket (endpoint)

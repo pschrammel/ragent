@@ -108,7 +108,7 @@ module Ragent
     end
 
 
-    def shutdown_command
+    def shutdown_command(options={})
       @self_write.puts("TERM")
     end
 
