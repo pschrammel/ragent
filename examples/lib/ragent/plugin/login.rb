@@ -2,6 +2,8 @@ require 'celluloid/current'
 require 'celluloid/io'
 
 
+module Ragent
+ module Plugin
 class Login
 
   include Ragent::Logging
@@ -57,3 +59,8 @@ class Login
   end
 
 end
+
+end
+end
+
+Ragent.ragent.plugins.register('login', Ragent::Plugin::Login)

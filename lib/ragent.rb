@@ -1,4 +1,4 @@
-require 'faye/websocket'
+#require 'faye/websocket'
 require 'eventmachine'
 require 'thread'
 require 'celluloid/current'
@@ -15,31 +15,49 @@ require_relative 'ragent/commands'
 require_relative 'ragent/command'
 
 module Ragent
-  def self.start(*args)
-    Agent.new(*args).run
+  def self.ragent
+    @ragent
+  end
+  
+  def self.setup(*args)
+    @ragent=Agent.new(*args)
   end
 
+
+  def self.plugin(name)
+    @ragent.plugins.load(name) if name.is_a?(Symbol)
+  end
+
+  def self.run
+    @ragent.run
+  end
+    
   class Agent
     include Ragent::Logging
 
-    attr_reader :supervisor, :workdir
+    attr_reader :workdir
+    attr_reader :supervisor
     attr_reader :commands
+    attr_reader :plugins
+    
     def initialize(log_level:, workdir:)
       @workdir=Pathname.new(workdir)
-
-
+      $: << @workdir.join('lib').to_s
+       
+      
       Ragent::Logging.logger=::Logging.logger['ragent']
       logger.add_appenders ::Logging.appenders.stdout
 
       @commands=Ragent::Commands.new(self)
       register_commands
 
-      @plugins=Plugins.search(self)
-      @plugins.configure
-      @supervisor = Celluloid::Supervision::Container.run!
+      @plugins=Plugins.new(self)
     end
 
     def run
+      @plugins.configure
+      @supervisor = Celluloid::Supervision::Container.run!
+
       self_read, @self_write = IO.pipe
 
       %w(TERM TTIN INT).each do |sig|

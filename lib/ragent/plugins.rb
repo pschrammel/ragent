@@ -1,43 +1,37 @@
+# Ragent::Plugin is reserved for plugins!
 module Ragent
   class Plugins
     include Ragent::Logging
-
-    def self.search(ragent)
-      new(ragent).search
-    end
 
     def initialize(ragent)
       @ragent=ragent
       @logger=ragent.logger
       @plugins={}
+      @running_plugins=[]
     end
 
-    def search
-      # find plugins
-      plugins_dir=@ragent.workdir.join("plugins").expand_path
-      plugins_dir.
-        each_child(false) do |plugin_dir|
-        require plugins_dir.join(plugin_dir,'ragent.rb').to_s
-        plugin=ActiveSupport::Inflector.
-                constantize(
-                  ActiveSupport::Inflector.camelize(
-                  plugin_dir)).new(@ragent)
-        @plugins[plugin_dir]=plugin
-        info "Found: #{plugin.name}"
-      end
-      self
+    def load(name)
+      info "loading plugin #{name}"
+      require "ragent/plugin/#{name}"
+      raise "plugin #{name} didn't register" unless @plugins[name.to_s]
+    end
+    
+    def register(name, mod)
+      @plugins[name.to_s] = mod
     end
 
     def configure
       @plugins.values.each do |plugin|
         info "Configure: #{plugin.name}"
-        plugin.configure
+        running_plugin=plugin.new(@ragent)
+        running_plugin.configure
+        @running_plugins << running_plugin
       end
       self
     end
 
     def start
-      @plugins.values.each do |plugin|
+      @running_plugins.each do |plugin|
         info "Starting: #{plugin.name}"
 
         plugin.start
@@ -45,7 +39,7 @@ module Ragent
     end
 
     def stop
-      @plugins.values.each do |plugin|
+      @running_plugins.each do |plugin|
         info "Stoping: #{plugin.name}"
         plugin.stop
       end

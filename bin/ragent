@@ -2,9 +2,11 @@
 
 require_relative '../lib/ragent'
 
-Ragent.start(
+workdir=Dir.pwd
+
+ragent=Ragent.setup(
   log_level: ENV['RAGENT_LOG_LEVEL'] || 'info',
-  workdir: ARGV[0]
+  workdir: workdir
 )
 
-
+eval File.read(ragent.workdir.join("config.ragent"))

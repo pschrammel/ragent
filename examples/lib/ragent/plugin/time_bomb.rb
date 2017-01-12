@@ -1,3 +1,5 @@
+module Ragent
+module Plugin
 class TimeBomb
 
   class TestBomb
@@ -95,3 +97,7 @@ class TimeBomb
     debug "boom: #{params.inspect}"
   end
 end
+end
+end
+
+Ragent.ragent.plugins.register('time_bomb', Ragent::Plugin::TimeBomb)
