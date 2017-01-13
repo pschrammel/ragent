@@ -25,6 +25,7 @@ module Ragent
         info "Configure: #{plugin.name}"
         running_plugin=plugin.new(@ragent)
         running_plugin.configure
+        debug "Configured: #{plugin.name}"
         @running_plugins << running_plugin
       end
       self
@@ -33,15 +34,16 @@ module Ragent
     def start
       @running_plugins.each do |plugin|
         info "Starting: #{plugin.name}"
-
         plugin.start
+        debug "Started: #{plugin.name}"
       end
     end
 
     def stop
       @running_plugins.each do |plugin|
-        info "Stoping: #{plugin.name}"
+        info "Stopping: #{plugin.name}"
         plugin.stop
+        debug "Stopped: #{plugin.name}"
       end
     end
 
