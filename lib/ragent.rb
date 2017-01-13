@@ -18,20 +18,20 @@ module Ragent
   def self.ragent
     @ragent
   end
-  
+
   def self.setup(*args)
     @ragent=Agent.new(*args)
   end
 
 
-  def self.plugin(name)
-    @ragent.plugins.load(name) if name.is_a?(Symbol)
+  def self.plugin(name,*args, &block)
+    @ragent.plugins.load(name,*args, &block) if name.is_a?(Symbol)
   end
 
   def self.run
     @ragent.run
   end
-    
+
   class Agent
     include Ragent::Logging
 
@@ -39,12 +39,12 @@ module Ragent
     attr_reader :supervisor
     attr_reader :commands
     attr_reader :plugins
-    
+
     def initialize(log_level:, workdir:)
       @workdir=Pathname.new(workdir)
       $: << @workdir.join('lib').to_s
-       
-      
+
+
       Ragent::Logging.logger=::Logging.logger['ragent']
       logger.add_appenders ::Logging.appenders.stdout
 
@@ -55,7 +55,6 @@ module Ragent
     end
 
     def run
-      @plugins.configure
       @supervisor = Celluloid::Supervision::Container.run!
 
       self_read, @self_write = IO.pipe
