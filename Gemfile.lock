@@ -1,11 +1,13 @@
+PATH
+  remote: .
+  specs:
+    ragent (0.0.1)
+      celluloid (~> 0.17.0)
+      logging (~> 2.1.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (5.0.0.1)
-      concurrent-ruby (~> 1.0, >= 1.0.2)
-      i18n (~> 0.7)
-      minitest (~> 5.1)
-      tzinfo (~> 1.1)
     celluloid (0.17.3)
       celluloid-essentials
       celluloid-extras
@@ -19,47 +21,42 @@ GEM
       timers (>= 4.1.1)
     celluloid-fsm (0.20.5)
       timers (>= 4.1.1)
-    celluloid-io (0.17.3)
-      celluloid (>= 0.17.2)
-      nio4r (>= 1.1)
-      timers (>= 4.1.1)
     celluloid-pool (0.20.5)
       timers (>= 4.1.1)
     celluloid-supervision (0.20.6)
       timers (>= 4.1.1)
-    concurrent-ruby (1.0.2)
-    eventmachine (1.2.1)
-    faye-websocket (0.10.5)
-      eventmachine (>= 0.12.0)
-      websocket-driver (>= 0.5.1)
+    diff-lcs (1.2.5)
     hitimes (1.2.4)
-    i18n (0.7.0)
     little-plugger (1.1.4)
     logging (2.1.0)
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
-    minitest (5.10.0)
     multi_json (1.12.1)
-    nio4r (1.2.1)
-    thread_safe (0.3.5)
+    rake (10.5.0)
+    rspec (3.5.0)
+      rspec-core (~> 3.5.0)
+      rspec-expectations (~> 3.5.0)
+      rspec-mocks (~> 3.5.0)
+    rspec-core (3.5.4)
+      rspec-support (~> 3.5.0)
+    rspec-expectations (3.5.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.5.0)
+    rspec-mocks (3.5.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.5.0)
+    rspec-support (3.5.0)
     timers (4.1.2)
       hitimes
-    tzinfo (1.2.2)
-      thread_safe (~> 0.1)
-    websocket-driver (0.6.4)
-      websocket-extensions (>= 0.1.0)
-    websocket-extensions (0.1.2)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  activesupport
-  celluloid
-  celluloid-io
-  eventmachine
-  faye-websocket
-  logging
+  bundler (~> 1.13)
+  ragent!
+  rake (~> 10.0)
+  rspec (~> 3.0)
 
 BUNDLED WITH
-   1.13.6
+   1.13.7
