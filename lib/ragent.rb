@@ -11,6 +11,7 @@ require 'pathname'
 
 require_relative 'ragent/logging'
 require_relative 'ragent/plugins'
+require_relative 'ragent/plugin'
 require_relative 'ragent/commands'
 require_relative 'ragent/command'
 
@@ -50,12 +51,12 @@ module Ragent
 
       @commands=Ragent::Commands.new(self)
       register_commands
-
       @plugins=Plugins.new(self)
     end
 
     def run
       @supervisor = Celluloid::Supervision::Container.run!
+
 
       self_read, @self_write = IO.pipe
 
