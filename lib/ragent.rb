@@ -1,10 +1,10 @@
 #require 'faye/websocket'
-require 'eventmachine'
+#require 'eventmachine'
 require 'thread'
 require 'celluloid/current'
 require 'celluloid/autostart'
 
-require 'active_support/inflector'
+#require 'active_support/inflector'
 
 require 'logging'
 require 'pathname'
