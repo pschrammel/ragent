@@ -1,10 +1,7 @@
-#require 'faye/websocket'
-#require 'eventmachine'
+# frozen_string_literal: true
 require 'thread'
 require 'celluloid/current'
 require 'celluloid/autostart'
-
-#require 'active_support/inflector'
 
 require 'logging'
 require 'pathname'
@@ -17,21 +14,37 @@ require_relative 'ragent/commands'
 require_relative 'ragent/command'
 
 module Ragent
+  DEFAULT_LOG_LEVEL = 'info'
+
+  def self.start(workdir: nil, log_level: nil, blocking: true)
+    Ragent.setup(
+      log_level: ENV['RAGENT_LOG_LEVEL'] || log_level || DEFAULT_LOG_LEVEL,
+      workdir: workdir || Dir.pwd
+    ).config.run(blocking)
+  end
+
   def self.ragent
     @ragent
   end
 
   def self.setup(*args)
-    @ragent=Agent.new(*args)
+    @ragent = Agent.new(*args)
+    self
   end
 
-
-  def self.plugin(name,*args, &block)
-    @ragent.plugins.load(name,*args, &block) if name.is_a?(Symbol)
+  # move this into a config builder
+  def self.config
+    eval File.read(ragent.workdir.join('config.ragent'))
+    self
   end
 
-  def self.run
-    @ragent.run
+  def self.plugin(name, *args, &block)
+    @ragent.plugins.load(name, *args, &block) if name.is_a?(Symbol)
+  end
+
+  def self.run(blocking)
+    @ragent.run(blocking)
+    self
   end
 
   class Agent
@@ -43,55 +56,49 @@ module Ragent
     attr_reader :plugins
 
     def initialize(log_level:, workdir:)
-      @workdir=Pathname.new(workdir)
-      $: << @workdir.join('lib').to_s
-
-
-      Ragent::Logging.logger=::Logging.logger['ragent']
+      @workdir = Pathname.new(workdir)
+      $LOAD_PATH << @workdir.join('lib').to_s
+      Ragent::Logging.logger = ::Logging.logger['ragent']
       logger.add_appenders ::Logging.appenders.stdout
-
-      @commands=Ragent::Commands.new(self)
+      @commands = Ragent::Commands.new(self)
       register_commands
-      @plugins=Plugins.new(self)
+      @plugins = Plugins.new(self)
     end
 
-    def run
+    def run(blocking = true)
       @supervisor = Celluloid::Supervision::Container.run!
+      plugins.start
+      term_wait_loop if blocking
+    end
 
+    private
 
+    def term_wait_loop
       self_read, @self_write = IO.pipe
-
       %w(TERM TTIN INT).each do |sig|
         Signal.trap sig do
           @self_write.puts(sig)
         end
       end
-
-      #start_em
-      @plugins.start
-
-      stop=false
+      stop = false
       while stop || readable_io = IO.select([self_read])
         signal = readable_io.first[0].gets.strip
-        stop=handle_signal(signal)
-        exit(0)
+        break if handle_signal(signal)
       end
+      info "Exiting"
     end
 
-    private
-
-    #def start_em
     #  EM.epoll
     #  Thread.new { EventMachine.run } unless EventMachine.reactor_running?
     #  sleep 0.01 until EventMachine.reactor_running?
-    #end
+    # end
 
     def handle_signal(signal)
       info "Got signal #{signal}"
       case signal
-      when 'TERM','INT'
-        info "Shutting down..."
-        EM.stop if EventMachine.reactor_running?
+      when 'TERM', 'INT'
+        info 'Shutting down...'
+        #EM.stop if EventMachine.reactor_running?
         @plugins.stop
         @supervisor.shutdown
         true
@@ -101,24 +108,23 @@ module Ragent
           if thread.backtrace
             warn thread.backtrace.join("\n")
           else
-            warn "no backtrace available"
+            warn 'no backtrace available'
           end
         end
         false
       end
     end
 
-
-    def shutdown_command(options={})
-      @self_write.puts("TERM")
+    def shutdown_command(_options = {})
+      @self_write.puts('TERM')
     end
 
     def register_commands
       # stop
-      cmd=Ragent::Command.new(main: 'shutdown',
-                              sub: nil,
-                              recipient: self,
-                              method: :shutdown_command)
+      cmd = Ragent::Command.new(main: 'shutdown',
+                                sub: nil,
+                                recipient: self,
+                                method: :shutdown_command)
       @commands.add(cmd)
     end
   end

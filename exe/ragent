@@ -1,12 +1,6 @@
 #!/usr/bin/env ruby
 
 require_relative '../lib/ragent'
+require_relative '../lib/ragent/cli'
 
-workdir=Dir.pwd
-
-ragent=Ragent.setup(
-  log_level: ENV['RAGENT_LOG_LEVEL'] || 'info',
-  workdir: workdir
-)
-
-eval File.read(ragent.workdir.join("config.ragent"))
+Ragent::Cli::Main.start(ARGV)
