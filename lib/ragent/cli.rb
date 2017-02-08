@@ -5,8 +5,8 @@ module Ragent
     class Main < ::Thor
 
       desc "start", "starts the ragent framweork reading your config.ragent file"
-      option :log_level
-      option :root
+      option :log_level, banner: "<debug|info|warn|error|fatal> overrides ENV RAGENT_LOG_LEVEL"
+      option :root, banner: "<DIR> the root of the app (default is the pwd)"
       def start
         Ragent.start(workdir: options[:root],
                      log_level: options[:log_level],

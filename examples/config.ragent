@@ -1,4 +1,4 @@
-Ragent.plugin :time_bomb
-Ragent.plugin :login
+plugin :time_bomb
+plugin :login
 
 

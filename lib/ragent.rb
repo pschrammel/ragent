@@ -12,6 +12,7 @@ require_relative 'ragent/plugins'
 require_relative 'ragent/plugin'
 require_relative 'ragent/commands'
 require_relative 'ragent/command'
+require_relative 'ragent/configurator'
 
 module Ragent
   DEFAULT_LOG_LEVEL = 'info'
@@ -29,23 +30,8 @@ module Ragent
 
   def self.setup(*args)
     @ragent = Agent.new(*args)
-    self
   end
 
-  # move this into a config builder
-  def self.config
-    eval File.read(ragent.workdir.join('config.ragent'))
-    self
-  end
-
-  def self.plugin(name, *args, &block)
-    @ragent.plugins.load(name, *args, &block) if name.is_a?(Symbol)
-  end
-
-  def self.run(blocking)
-    @ragent.run(blocking)
-    self
-  end
 
   class Agent
     include Ragent::Logging
@@ -58,11 +44,24 @@ module Ragent
     def initialize(log_level:, workdir:)
       @workdir = Pathname.new(workdir)
       $LOAD_PATH << @workdir.join('lib').to_s
+
+      # setup logger
       Ragent::Logging.logger = ::Logging.logger['ragent']
       logger.add_appenders ::Logging.appenders.stdout
+
       @commands = Ragent::Commands.new(self)
-      register_commands
       @plugins = Plugins.new(self)
+
+      register_commands
+    end
+
+    def config
+      Ragent::Configurator.load(self, workdir.join('config.ragent'))
+      self
+    end
+
+    def add_plugin(name, *args, &block)
+      plugins.load(name, *args, &block) if name.is_a?(Symbol)
     end
 
     def run(blocking = true)
@@ -96,7 +95,7 @@ module Ragent
     def handle_signal(signal)
       info "Got signal #{signal}"
       case signal
-      when 'TERM', 'INT'
+      when 'TERM', 'INT','SHUTDOWN' #shutdown is an internal command
         info 'Shutting down...'
         #EM.stop if EventMachine.reactor_running?
         @plugins.stop
@@ -116,11 +115,10 @@ module Ragent
     end
 
     def shutdown_command(_options = {})
-      @self_write.puts('TERM')
+      @self_write.puts('SHUTDOWN')
     end
 
     def register_commands
-      # stop
       cmd = Ragent::Command.new(main: 'shutdown',
                                 sub: nil,
                                 recipient: self,
