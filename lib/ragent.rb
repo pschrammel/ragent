@@ -9,6 +9,7 @@ require 'celluloid/autostart'
 require 'logging'
 require 'pathname'
 
+require_relative 'ragent/version'
 require_relative 'ragent/logging'
 require_relative 'ragent/plugins'
 require_relative 'ragent/plugin'

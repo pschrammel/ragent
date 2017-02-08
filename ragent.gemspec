@@ -31,6 +31,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency 'celluloid', '~>0.17.0'
+  spec.add_dependency 'thor', '~>0.19'
 #  spec.add_dependency 'activesupport'
 #  spec.add_dependency 'eventmachine'
 #  spec.add_dependency 'faye-websocket'
