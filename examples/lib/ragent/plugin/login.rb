@@ -7,8 +7,7 @@ module Ragent
       include Ragent::Plugin
       include Celluloid::IO
 
-      def configure
-      end
+      plugin_name "login"
 
       def start
         @server = TCPServer.new('127.0.0.1', 6666)

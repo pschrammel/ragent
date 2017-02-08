@@ -5,8 +5,8 @@ module Ragent
 
     attr_reader :main, :sub
     def initialize(main:, sub: nil, recipient:, method:)
-      @main=main
-      @sub=sub
+      @main=main.to_s
+      @sub=sub.to_s
       @recipient=recipient
       @method=method
     end
@@ -14,6 +14,10 @@ module Ragent
     def execute(options={})
       info "running: #{@main} #{@sub}, calling: #{@method}"
       @recipient.send(@method,options)
+    end
+
+    def sub?
+      !sub.empty?
     end
 
     def help

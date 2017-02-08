@@ -9,7 +9,7 @@ module Ragent
     end
 
     def add(command)
-      if command.sub
+      if command.sub?
         @commands[command.main] ||= {}
         @commands[command.main][command.sub]=command
       else
@@ -22,11 +22,21 @@ module Ragent
       debug "checkig command: #{main},#{sub},#{options}"
       cmd=@commands[main]
       if cmd
+
         if cmd.kind_of?(Hash) && sub
-          return @commands[main][sub]
+          sub_cmd=@commands[main][sub]
+          if sub_cmd
+            debug "command found (#{main},#{sub})"
+          else
+            debug "command not found (#{main},#{sub})"
+          end
+          return sub_cmd
         else
+          debug "command found (#{main})"
           return cmd
         end
+      else
+        debug "command not found"
       end
       nil
     end

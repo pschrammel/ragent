@@ -13,6 +13,7 @@ require_relative 'ragent/plugin'
 require_relative 'ragent/commands'
 require_relative 'ragent/command'
 require_relative 'ragent/configurator'
+require_relative 'ragent/command_helpers'
 
 module Ragent
   DEFAULT_LOG_LEVEL = 'info'

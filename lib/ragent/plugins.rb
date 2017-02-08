@@ -30,10 +30,10 @@ module Ragent
 
     def start
       @running_plugins.each do |plugin|
-        info "Starting: #{plugin.name}"
+#        info "Starting: #{plugin.plugin_name}"
         # TODO: start dependencies
         plugin.start
-        debug "Started: #{plugin.name}"
+#        debug "Started: #{plugin.plugin_name}"
       end
     end
 
