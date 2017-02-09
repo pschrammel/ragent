@@ -19,7 +19,7 @@ module Ragent
       # TODO: load and configure dependencies
       plugin = @plugins[name.to_s]
       info "Configure: #{name}"
-      running_plugin = plugin.new(@ragent)
+      running_plugin = plugin.new(@ragent,plugin_name: name)
       running_plugin.configure(*args, &block)
       debug "Configured: #{name}"
       @running_plugins << running_plugin
@@ -30,14 +30,18 @@ module Ragent
     end
 
     def start
-      @running_plugins.each(&:start)
+      @running_plugins.each do |plugin|
+        info "Starting: #{plugin.plugin_name}"
+        plugin.start
+        debug "Started: #{plugin.plugin_name}"
+      end
     end
 
     def stop
       @running_plugins.each do |plugin|
-        info "Stopping: #{plugin.name}"
+        info "Stopping: #{plugin.plugin_name}"
         plugin.stop
-        debug "Stopped: #{plugin.name}"
+        debug "Stopped: #{plugin.plugin_name}"
       end
     end
 

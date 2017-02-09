@@ -19,7 +19,10 @@ module Ragent
         end
       end
     end
-    def initialize(ragent)
+
+    attr_reader :plugin_name
+    def initialize(ragent, plugin_name:)
+      @plugin_name=plugin_name
       @ragent = ragent
       @logger = ragent.logger
       self.class.prepared_commands.each do |cmd|
