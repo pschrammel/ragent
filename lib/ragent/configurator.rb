@@ -1,13 +1,14 @@
+# frozen_string_literal: true
 module Ragent
   class Configurator
     include Ragent::Logging
 
     def initialize(ragent)
-      @ragent=ragent
+      @ragent = ragent
     end
 
     def self.load(ragent, filename)
-      config=new(ragent)
+      config = new(ragent)
       config._load(filename)
     end
 
@@ -17,9 +18,8 @@ module Ragent
 
     private
 
-    def plugin(*args,&block)
-      @ragent.add_plugin(*args,&block)
+    def plugin(*args, &block)
+      @ragent.add_plugin(*args, &block)
     end
-
   end
 end

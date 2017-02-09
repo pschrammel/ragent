@@ -1,6 +1,5 @@
+# frozen_string_literal: true
 source 'https://rubygems.org'
 
-gem 'ragent', path: "#{__dir__}/../"
 gem 'celluloid-io'
-
-
+gem 'ragent', path: "#{__dir__}/../"

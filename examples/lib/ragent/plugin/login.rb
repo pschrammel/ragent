@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'celluloid/current'
 require 'celluloid/io'
 
@@ -7,7 +8,7 @@ module Ragent
       include Ragent::Plugin
       include Celluloid::IO
 
-      plugin_name "login"
+      plugin_name 'login'
 
       def start
         @server = TCPServer.new('127.0.0.1', 6666)
@@ -15,7 +16,7 @@ module Ragent
       end
 
       def stop
-        @server.close if @server
+        @server&.close
       end
 
       private

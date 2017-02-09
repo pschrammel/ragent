@@ -33,7 +33,6 @@ module Ragent
     @ragent = Agent.new(*args)
   end
 
-
   class Agent
     include Ragent::Logging
 
@@ -85,7 +84,7 @@ module Ragent
         signal = readable_io.first[0].gets.strip
         break if handle_signal(signal)
       end
-      info "Exiting"
+      info 'Exiting'
     end
 
     #  EM.epoll
@@ -96,9 +95,9 @@ module Ragent
     def handle_signal(signal)
       info "Got signal #{signal}"
       case signal
-      when 'TERM', 'INT','SHUTDOWN' #shutdown is an internal command
+      when 'TERM', 'INT', 'SHUTDOWN' # shutdown is an internal command
         info 'Shutting down...'
-        #EM.stop if EventMachine.reactor_running?
+        # EM.stop if EventMachine.reactor_running?
         @plugins.stop
         @supervisor.shutdown
         true

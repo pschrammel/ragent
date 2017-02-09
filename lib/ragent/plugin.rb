@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 module Ragent
   module Plugin
-
-
     def self.included(klass)
       klass.send(:include, Ragent::Logging)
       klass.send(:include, Celluloid)
@@ -13,9 +11,9 @@ module Ragent
     end
 
     module ClassMethods
-      def plugin_name(name=nil)
+      def plugin_name(name = nil)
         if name
-          @name=name
+          @name = name
         else
           @name
         end

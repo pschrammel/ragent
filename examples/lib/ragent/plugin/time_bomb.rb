@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require_relative 'time_bomb/bomb'
 
 module Ragent
@@ -8,7 +9,7 @@ module Ragent
       plugin_name 'time_bomb'
       commands :tick, :list, :disarm
 
-      def configure(*args)
+      def configure(*_args)
         @next_time_bomb_id = 1
         @time_bombs = {}
         subscribe('time-bomb-boom', :boom_callback)

@@ -1,24 +1,25 @@
+# frozen_string_literal: true
 # Ragent::Plugin is reserved for plugins!
 module Ragent
   class Plugins
     include Ragent::Logging
 
     def initialize(ragent)
-      @ragent=ragent
-      @logger=ragent.logger
-      @plugins={}
-      @running_plugins=[]
+      @ragent = ragent
+      @logger = ragent.logger
+      @plugins = {}
+      @running_plugins = []
     end
 
-    def load(name,*args, &block)
+    def load(name, *args, &block)
       info "loading plugin #{name}"
       require "ragent/plugin/#{name}"
       raise "plugin #{name} didn't register" unless @plugins[name.to_s]
       info "loaded plugin #{name}"
-      #TODO: load and configure dependencies
-      plugin=@plugins[name.to_s]
+      # TODO: load and configure dependencies
+      plugin = @plugins[name.to_s]
       info "Configure: #{plugin.name}"
-      running_plugin=plugin.new(@ragent)
+      running_plugin = plugin.new(@ragent)
       running_plugin.configure(*args, &block)
       debug "Configured: #{plugin.name}"
       @running_plugins << running_plugin
@@ -29,12 +30,7 @@ module Ragent
     end
 
     def start
-      @running_plugins.each do |plugin|
-#        info "Starting: #{plugin.plugin_name}"
-        # TODO: start dependencies
-        plugin.start
-#        debug "Started: #{plugin.plugin_name}"
-      end
+      @running_plugins.each(&:start)
     end
 
     def stop
@@ -49,15 +45,15 @@ module Ragent
 
     def register_commands
       # stop
-      cmd=Ragent::Command.new(main: 'plugins',
-                              sub: 'list',
-                              recipient: self,
-                              method: :plugins_list_command)
+      cmd = Ragent::Command.new(main: 'plugins',
+                                sub: 'list',
+                                recipient: self,
+                                method: :plugins_list_command)
       @ragent.commands.add(cmd)
     end
 
-    def plugins_list_command(options)
-      @plugins.values.map do |plugin| plugin.name end.join("\n")
+    def plugins_list_command(_options)
+      @plugins.values.map(&:name).join("\n")
     end
   end
 end

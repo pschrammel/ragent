@@ -1,19 +1,19 @@
+# frozen_string_literal: true
 module Ragent
   class Command
-
     include Ragent::Logging
 
     attr_reader :main, :sub
     def initialize(main:, sub: nil, recipient:, method:)
-      @main=main.to_s
-      @sub=sub.to_s
-      @recipient=recipient
-      @method=method
+      @main = main.to_s
+      @sub = sub.to_s
+      @recipient = recipient
+      @method = method
     end
 
-    def execute(options={})
+    def execute(options = {})
       info "running: #{@main} #{@sub}, calling: #{@method}"
-      @recipient.send(@method,options)
+      @recipient.send(@method, options)
     end
 
     def sub?
