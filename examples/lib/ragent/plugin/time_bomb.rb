@@ -49,4 +49,4 @@ module Ragent
   end
 end
 
-Ragent.ragent.plugins.register('time_bomb', Ragent::Plugin::TimeBomb)
+Ragent.ragent.plugins.register(Ragent::Plugin::TimeBomb)

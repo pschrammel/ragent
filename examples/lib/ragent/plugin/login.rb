@@ -76,4 +76,4 @@ module Ragent
  end
 end
 
-Ragent.ragent.plugins.register('login', Ragent::Plugin::Login)
+Ragent.ragent.plugins.register(Ragent::Plugin::Login)

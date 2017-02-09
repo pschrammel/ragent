@@ -18,15 +18,15 @@ module Ragent
       info "loaded plugin #{name}"
       # TODO: load and configure dependencies
       plugin = @plugins[name.to_s]
-      info "Configure: #{plugin.name}"
+      info "Configure: #{name}"
       running_plugin = plugin.new(@ragent)
       running_plugin.configure(*args, &block)
-      debug "Configured: #{plugin.name}"
+      debug "Configured: #{name}"
       @running_plugins << running_plugin
     end
 
-    def register(name, mod)
-      @plugins[name.to_s] = mod
+    def register(mod)
+      @plugins[mod.plugin_name] = mod
     end
 
     def start
