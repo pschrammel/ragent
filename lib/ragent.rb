@@ -42,7 +42,7 @@ module Ragent
     attr_reader :plugins
 
     def initialize(log_level:, workdir:)
-      @workdir = Pathname.new(workdir)
+      @workdir = Pathname.new(workdir).expand_path
       $LOAD_PATH << @workdir.join('lib').to_s
 
       # setup logger
