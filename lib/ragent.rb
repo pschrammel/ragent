@@ -36,18 +36,17 @@ module Ragent
   class Agent
     include Ragent::Logging
 
-    attr_reader :workdir
+    attr_reader :workdir, :templates_path
     attr_reader :supervisor
     attr_reader :commands
     attr_reader :plugins
 
     def initialize(log_level:, workdir:)
+      @templates_path=Pathname.new(__FILE__).join('../../templates').expand_path
       @workdir = Pathname.new(workdir).expand_path
       $LOAD_PATH << @workdir.join('lib').to_s
 
-      # setup logger
-      Ragent::Logging.logger = ::Logging.logger['ragent']
-      logger.add_appenders ::Logging.appenders.stdout
+      init_logger(log_level)
 
       @commands = Ragent::Commands.new(self)
       @plugins = Plugins.new(self)
@@ -124,6 +123,12 @@ module Ragent
                                 recipient: self,
                                 method: :shutdown_command)
       @commands.add(cmd)
+    end
+
+    def init_logger(log_level)
+      Ragent::Logging.logger = ::Logging.logger['ragent']
+      logger.add_appenders ::Logging.appenders.stdout
+      ::Logging.logger['root'].level=log_level
     end
   end
 end
