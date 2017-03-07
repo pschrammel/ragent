@@ -36,10 +36,11 @@ module Ragent
 
     def stop; end
 
-    def agent(type:, as:)
+    def agent(type:, as:, args: [])
       @ragent.supervisor.supervise(
         type: type,
-        as: as
+        as: as,
+        args: args
       )
     end
 
